@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bishop Daily - Complete Website</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        :root {
+            --color-primary: #E1306C;
+            --color-primary-hover: #C13584;
+            --color-dark: #333;
+            --color-light: #f9f9f9;
+            --color-white: #ffffff;
+            --color-text: #555;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: #ADD8E6;
+            color: var(--color-dark);
+        }
+
+        .weather-bar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .weather-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .weather-icon { font-size: 2em; }
+        .weather-details h3 { font-size: 1.2em; font-weight: 600; }
+        .weather-details p { font-size: 0.9em; opacity: 0.9; }
+        .current-time { font-size: 1.1em; font-weight: 500; }
+
+        header {
+            background-color: var(--color-dark);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        header h1 { font-size: 2.5em; margin-bottom: 10px; }
+        header p { font-size: 1.1em; opacity: 0.9; }
+
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .section-box {
+            background-color: var(--color-white);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 40px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .section-box h2 {
+            margin-bottom: 20px;
+            color: var(--color-dark);
+            font-size: 1.8em;
+        }
+
+        .instagram-section {
+            background-color: var(--color-white);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 40px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .instagram-section h2 {
+            margin-bottom: 20px;
+            color: var(--color-dark);
+            font-size: 1.8em;
+            text-align: center;
+        }
+
+        .intro { text-align: center; margin-bottom: 30px; }
+        .intro p { font-size: 1.1em; color: var(--color-text); }
+
+        .social-links { text-align: center; margin: 30px 0; }
+        .social-links a {
+            display: inline-block;
+            padding: 12px 30px;
+            background-color: var(--color-primary);
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 500;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        .social-links a:hover {
+            background-color: var(--color-primary-hover);
+            transform: translateY(-2px);
+        }
+
+        .instagram-embed {
+            display: flex;
+            justify-content: center;
+            margin: 30px 0;
+        }
+
+        footer {
+            background-color: var(--color-dark);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+            margin-top: 60px;
+        }
+        footer p { opacity: 0.8; }
+
+        @media (max-width: 768px) {
+            .weather-bar { flex-direction: column; gap: 10px; text-align: center; }
+            .weather-info { flex-direction: column; gap: 10px; }
+            header h1 { font-size: 2em; }
+            .section-box, .instagram-section { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="weather-bar">
+        <div class="weather-info">
+            <div class="weather-icon" id="weatherIcon">🌤️</div>
+            <div class="weather-details">
+                <h3 id="weatherLocation">Delaware, OH</h3>
+                <p id="weatherDescription">Loading weather...</p>
+                <p id="weatherTemp"></p>
+            </div>
+        </div>
+        <div class="current-time" id="currentTime"></div>
+    </div>
+
+    <header>
+        <h1>Bishop Daily</h1>
+        <p>Your daily dose of inspiration, weather updates, and content</p>
+    </header>
+
+    <div class="container">
+        <section class="section-box">
+            <h2>Latest from Instagram</h2>
+            <p style="text-align: center; margin-bottom: 20px;">Follow <a href="https://www.instagram.com/bishop_daily/" target="_blank" style="color: #E1306C;">@bishop_daily</a> for daily updates</p>
+            <div class="instagram-embed">
+                <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/bishop_daily/?utm_source=ig_embed&amp;utm_campaign=loading" data-instgrm-version="14" style="background:#FFF; border:0; border-radius:3px; box-shadow:0 0 1px 0 rgba(0,0,0,0.5),0 1px 10px 0 rgba(0,0,0,0.15); margin: 1px; max-width:540px; min-width:326px; padding:0; width:99.375%;"></blockquote>
+                <script async src="//www.instagram.com/embed.js"></script>
+            </div>
+        </section>
+
+        <section class="section-box">
+            <h2>Today's Weather Statistics</h2>
+            <div style="position: relative; overflow: hidden; margin-bottom: 30px;">
+                <div id="carousel" style="display: flex; transition: transform 0.5s ease;">
+                    <div id="windCard" style="min-width: 100%; background: #667eea; color: white; padding: 20px; text-align: center; cursor: pointer;">
+                        <div style="font-size: 2em; margin-bottom: 5px;">💨</div>
+                        <h3 style="margin: 5px 0; font-size: 1.2em;">Wind Speed</h3>
+                        <p id="windSpeed" style="font-size: 1.8em; font-weight: bold; margin: 5px 0;">--</p>
+                    </div>
+                    <div id="precipCard" style="min-width: 100%; background: #56CCF2; color: white; padding: 20px; text-align: center; cursor: pointer;">
+                        <div style="font-size: 2em; margin-bottom: 5px;">🌧️</div>
+                        <h3 style="margin: 5px 0; font-size: 1.2em;">Precipitation</h3>
+                        <p id="precipitation" style="font-size: 1.8em; font-weight: bold; margin: 5px 0;">--</p>
+                    </div>
+                    <div id="humidityCard" style="min-width: 100%; background: #F093FB; color: white; padding: 20px; text-align: center; cursor: pointer;">
+                        <div style="font-size: 2em; margin-bottom: 5px;">💧</div>
+                        <h3 style="margin: 5px 0; font-size: 1.2em;">Humidity</h3>
+                        <p id="humidity" style="font-size: 1.8em; font-weight: bold; margin: 5px 0;">--</p>
+                    </div>
+                </div>
+                <div style="text-align: center; margin-top: 15px;">
+                    <span onclick="goToSlide(0)" style="cursor: pointer; display: inline-block; width: 12px; height: 12px; margin: 0 5px; background: #667eea; border-radius: 50%; opacity: 1;" id="dot0"></span>
+                    <span onclick="goToSlide(1)" style="cursor: pointer; display: inline-block; width: 12px; height: 12px; margin: 0 5px; background: #56CCF2; border-radius: 50%; opacity: 0.4;" id="dot1"></span>
+                    <span onclick="goToSlide(2)" style="cursor: pointer; display: inline-block; width: 12px; height: 12px; margin: 0 5px; background: #F093FB; border-radius: 50%; opacity: 0.4;" id="dot2"></span>
+                </div>
+            </div>
+            <h3 style="margin-bottom: 15px;">Today's Weather Data</h3>
+            anvas id="combinedChart" style="max-height: 400px;"></canvas>
+        </section>
+
+        <section class="instagram-section">
+            <h2>Follow on Instagram</h2>
+            <div class="intro">
+                <p>Stay connected with our daily posts, stories, and updates from @bishop_daily</p>
+            </div>
+            <div class="social-links">
+                <a href="https://www.instagram.com/bishop_daily/" target="_blank" rel="noopener noreferrer">Visit @bishop_daily on Instagram</a>
+            </div>
+            <div class="instagram-embed">
+                <blockquote class="instagram-media" data-instgrm-captioned data-instgrm-permalink="https://www.instagram.com/reel/DRUgbKGEe2t/" data-instgrm-version="14" style="background:#FFF; border:0; border-radius:3px; box-shadow:0 0 1px 0 rgba(0,0,0,0.5),0 1px 10px 0 rgba(0,0,0,0.15); margin: 1px; max-width:540px; min-width:326px; padding:0; width:99.375%;"></blockquote>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 Bishop Daily. All rights reserved.</p>
+        <p style="margin-top: 10px; font-size: 0.9em;">Weather powered by Open-Meteo API</p>
+    </footer>
+
+    <script>
+        let hourlyData = { time: [], temperature: [], windspeed: [], precipitation: [], humidity: [] };
+        let combinedChart;
+        let currentSlide = 0;
+        const totalSlides = 3;
+        const chartTypes = ['wind', 'precip', 'humidity'];
+
+        const weatherIcons = {
+            0: '☀️', 1: '🌤️', 2: '⛅', 3: '☁️',
+            45: '🌫️', 48: '🌫️',
+            51: '🌦️', 53: '🌦️', 55: '🌧️',
+            61: '🌧️', 63: '🌧️', 65: '🌧️',
+            71: '❄️', 73: '❄️', 75: '❄️',
+            80: '🌧️', 81: '🌧️', 82: '🌧️',
+            95: '⛈️', 96: '⛈️', 99: '⛈️'
+        };
+
+        const weatherDescriptions = {
+            0: 'Clear sky', 1: 'Mainly clear', 2: 'Partly cloudy', 3: 'Overcast',
+            45: 'Fog', 48: 'Depositing rime fog',
+            51: 'Light drizzle', 53: 'Moderate drizzle', 55: 'Dense drizzle',
+            61: 'Slight rain', 63: 'Moderate rain', 65: 'Heavy rain',
+            71: 'Slight snow', 73: 'Moderate snow', 75: 'Heavy snow',
+            80: 'Slight rain showers', 81: 'Moderate rain showers', 82: 'Violent rain showers',
+            95: 'Thunderstorm', 96: 'Thunderstorm with slight hail', 99: 'Thunderstorm with heavy hail'
+        };
+
+        function updateTime() {
+            const now = new Date();
+            const options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+            document.getElementById('currentTime').textContent = now.toLocaleDateString('en-US', options);
+        }
+
+        function goToSlide(index) {
+            currentSlide = index;
+            updateCarousel();
+            updateChart();
+        }
+
+        function updateCarousel() {
+            const carousel = document.getElementById('carousel');
+            carousel.style.transform = `translateX(-${currentSlide * 100}%)`;
+            for (let i = 0; i < totalSlides; i++) {
+                document.getElementById(`dot${i}`).style.opacity = i === currentSlide ? '1' : '0.4';
+            }
+        }
+
+        function updateChart() {
+            if (!combinedChart) return;
+            const type = chartTypes[currentSlide];
+            let data, label, color, borderColor;
+            
+            if (type === 'wind') {
+                data = hourlyData.windspeed;
+                label = 'Wind Speed (mph)';
+                color = 'rgba(102, 126, 234, 0.2)';
+                borderColor = '#667eea';
+            } else if (type === 'precip') {
+                data = hourlyData.precipitation;
+                label = 'Precipitation (in)';
+                color = 'rgba(86, 204, 242, 0.2)';
+                borderColor = '#56CCF2';
+            } else {
+                data = hourlyData.humidity;
+                label = 'Humidity (%)';
+                color = 'rgba(240,
