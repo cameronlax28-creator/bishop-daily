@@ -1,238 +1,283 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bishop Daily</title>
-  <style>
-    :root {
-      --owu-red: #C4122E;
-      --owu-black: #100F0D;
-      --owu-white: #FFFFFF;
-    }
-    * { box-sizing: border-box; }
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      background: var(--owu-white);
-      color: #222;
-    }
-    header {
-      background-color: var(--owu-red);
-      color: var(--owu-white);
-      padding: 16px 0;
-      text-align: center;
-      letter-spacing: 2px;
-    }
-    nav {
-      background-color: var(--owu-black);
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-    nav a {
-      color: var(--owu-white);
-      text-decoration: none;
-      padding: 12px 20px;
-      display: inline-block;
-      transition: background .2s;
-      font-weight: 600;
-      font-size: 0.95rem;
-    }
-    nav a:hover { background: var(--owu-red); }
-    .container {
-      max-width: 900px;
-      margin: 28px auto;
-      padding: 20px;
-      background: #fafafa;
-      border-radius: 8px;
-      box-shadow: 0 3px 8px rgba(0,0,0,0.08);
-    }
-    h2 { color: var(--owu-red); margin-top: 0; }
-    .section { margin-bottom: 36px; }
-    .weather-card {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 16px;
-      border-radius: 8px;
-      background: var(--owu-white);
-      border: 1px solid #ddd;
-    }
-    .weather-main { font-size: 1.1rem; font-weight: 600; }
-    .weather-extra { font-size: 0.9rem; color: #555; }
-    #weather img { vertical-align: middle; margin-right: 8px; }
-    .weather-tabs {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 16px;
-      flex-wrap: wrap;
-    }
-    .weather-tab {
-      padding: 10px 18px;
-      border: 2px solid var(--owu-red);
-      background: var(--owu-white);
-      color: var(--owu-red);
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: 600;
-      transition: all 0.2s;
-    }
-    .weather-tab:hover { background: #ffe5e5; }
-    .weather-tab.active {
-      background: var(--owu-red);
-      color: var(--owu-white);
-    }
-    .weather-detail {
-      display: none;
-      padding: 20px;
-      background: var(--owu-white);
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      text-align: center;
-    }
-    .weather-detail.active { display: block; }
-    .weather-detail .value {
-      font-size: 2.5rem;
-      font-weight: bold;
-      color: var(--owu-red);
-    }
-    .weather-detail .label {
-      font-size: 1rem;
-      color: #666;
-      margin-top: 8px;
-    }
-    .weather-detail .icon {
-      font-size: 2rem;
-      margin-bottom: 10px;
-    }
-    ul { padding-left: 18px; }
-    footer {
-      background: var(--owu-black);
-      color: var(--owu-white);
-      padding: 10px 0;
-      text-align: center;
-      margin-top: 40px;
-      font-size: .9em;
-    }
-    .tagline { margin: 4px 0 0; font-size: 0.95rem; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bishop Daily - Complete Website</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        :root {
+            --color-primary: #E1306C;
+            --color-primary-hover: #C13584;
+            --color-dark: #333;
+            --color-light: #f9f9f9;
+            --color-white: #ffffff;
+            --color-text: #555;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: #ADD8E6;
+            color: var(--color-dark);
+        }
+
+        .weather-bar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .weather-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .weather-icon { font-size: 2em; }
+        .weather-details h3 { font-size: 1.2em; font-weight: 600; }
+        .weather-details p { font-size: 0.9em; opacity: 0.9; }
+        .current-time { font-size: 1.1em; font-weight: 500; }
+
+        header {
+            background-color: var(--color-dark);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        header h1 { font-size: 2.5em; margin-bottom: 10px; }
+        header p { font-size: 1.1em; opacity: 0.9; }
+
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .section-box {
+            background-color: var(--color-white);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 40px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .section-box h2 {
+            margin-bottom: 20px;
+            color: var(--color-dark);
+            font-size: 1.8em;
+        }
+
+        .instagram-section {
+            background-color: var(--color-white);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 40px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .instagram-section h2 {
+            margin-bottom: 20px;
+            color: var(--color-dark);
+            font-size: 1.8em;
+            text-align: center;
+        }
+
+        .intro { text-align: center; margin-bottom: 30px; }
+        .intro p { font-size: 1.1em; color: var(--color-text); }
+
+        .social-links { text-align: center; margin: 30px 0; }
+        .social-links a {
+            display: inline-block;
+            padding: 12px 30px;
+            background-color: var(--color-primary);
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 500;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        .social-links a:hover {
+            background-color: var(--color-primary-hover);
+            transform: translateY(-2px);
+        }
+
+        .instagram-embed {
+            display: flex;
+            justify-content: center;
+            margin: 30px 0;
+        }
+
+        footer {
+            background-color: var(--color-dark);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+            margin-top: 60px;
+        }
+        footer p { opacity: 0.8; }
+
+        @media (max-width: 768px) {
+            .weather-bar { flex-direction: column; gap: 10px; text-align: center; }
+            .weather-info { flex-direction: column; gap: 10px; }
+            header h1 { font-size: 2em; }
+            .section-box, .instagram-section { padding: 20px; }
+        }
+    </style>
 </head>
 <body>
-  <header>
-    <h1>Bishop Daily</h1>
-    <p class="tagline">Your daily campus weather and important events</p>
-  </header>
-  <nav>
-    <a href="#home">Home</a>
-    <a href="#weather-section">Weather</a>
-    <a href="#events">Events</a>
-    <a href="#contact">Contact</a>
-  </nav>
-  <main class="container" id="home">
-    <section class="section" id="weather-section">
-      <h2>Today's Weather Update</h2>
-      <div id="weather">
-        <div class="weather-card"><span>Loading weather...</span></div>
-      </div>
-      <div class="weather-tabs" id="weather-tabs" style="display:none;">
-        <button class="weather-tab active" data-tab="temp">Temperature</button>
-        <button class="weather-tab" data-tab="wind">Wind</button>
-        <button class="weather-tab" data-tab="humidity">Humidity</button>
-        <button class="weather-tab" data-tab="precip">Precipitation</button>
-      </div>
-      <div id="weather-details">
-        <div class="weather-detail active" id="detail-temp">
-          <div class="icon">🌡️</div>
-          <div class="value" id="temp-value">--</div>
-          <div class="label">Current Temperature</div>
-          <div class="label" id="temp-extra"></div>
-        </div>
-        <div class="weather-detail" id="detail-wind">
-          <div class="icon">💨</div>
-          <div class="value" id="wind-value">--</div>
-          <div class="label">Wind Speed</div>
-          <div class="label" id="wind-extra"></div>
-        </div>
-        <div class="weather-detail" id="detail-humidity">
-          <div class="icon">💧</div>
-          <div class="value" id="humidity-value">--</div>
-          <div class="label">Humidity</div>
-          <div class="label" id="humidity-extra"></div>
-        </div>
-        <div class="weather-detail" id="detail-precip">
-          <div class="icon">🌧️</div>
-          <div class="value" id="precip-value">--</div>
-          <div class="label">Precipitation (last 1h)</div>
-          <div class="label" id="precip-extra"></div>
-        </div>
-      </div>
-    </section>
-    
-
-  // Delaware, OH coordinates (Ohio Wesleyan University)
-const lat = 40.2987;
-const lon = -83.0680;
-const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,precipitation,weather_code,wind_speed_10m,wind_direction_10m&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch&timezone=America%2FNew_York`;
-
-    });
-    fetch(url)
-      .then(r => r.json())
-      .then(data => {
-        if (data.cod !== 200) throw new Error(data.message);
-        const temp = Math.round(data.main.temp);
-        const feels = Math.round(data.main.feels_like);
-        const high = Math.round(data.main.temp_max);
-        const low = Math.round(data.main.temp_min);
-        const humidity = data.main.humidity;
-        const windSpeed = Math.round(data.wind.speed);
-        const windDir = data.wind.deg;
-        const desc = data.weather[0].description;
-        const icon = data.weather[0].icon;
-        const rain = data.rain ? data.rain['1h'] || 0 : 0;
-        const snow = data.snow ? data.snow['1h'] || 0 : 0;
-        const precip = rain + snow;
-        document.getElementById('weather').innerHTML = `
-          <div class="weather-card">
-            <img src="https://openweathermap.org/img/wn/${icon}@2x.png" alt="${desc}">
-            <div>
-              <div class="weather-main">${city}, ${state} - ${desc.charAt(0).toUpperCase() + desc.slice(1)}</div>
-              <div class="weather-extra">Now: ${temp}°F | Feels like: ${feels}°F</div>
+    <div class="weather-bar">
+        <div class="weather-info">
+            <div class="weather-icon" id="weatherIcon">🌤️</div>
+            <div class="weather-details">
+                <h3 id="weatherLocation">Delaware, OH</h3>
+                <p id="weatherDescription">Loading weather...</p>
+                <p id="weatherTemp"></p>
             </div>
-          </div>`;
-        document.getElementById('weather-tabs').style.display = 'flex';
-        document.getElementById('temp-value').textContent = temp + '°F';
-        document.getElementById('temp-extra').textContent = `Feels like ${feels}°F | High: ${high}°F | Low: ${low}°F`;
-        document.getElementById('wind-value').textContent = windSpeed + ' mph';
-        document.getElementById('wind-extra').textContent = `Direction: ${getWindDirection(windDir)} (${windDir}°)`;
-        document.getElementById('humidity-value').textContent = humidity + '%';
-        document.getElementById('humidity-extra').textContent = humidity > 70 ? 'High humidity - feels muggy' : humidity < 30 ? 'Low humidity - feels dry' : 'Comfortable humidity level';
-        document.getElementById('precip-value').textContent = precip > 0 ? precip.toFixed(2) + ' mm' : 'None';
-        document.getElementById('precip-extra').textContent = precip > 0 ? 'Precipitation detected recently' : 'No precipitation in the last hour';
-      })
-      .catch(err => {
-        document.getElementById('weather').innerHTML = '<div class="weather-card"><span>Unable to load weather data.</span></div>';
-        console.error(err);
-      });
-    function getWindDirection(deg) {
-      const dirs = ['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','WNW','NW','NNW'];
-      return dirs[Math.round(deg / 22.5) % 16];
-    }
-  </script>
-
-  <!-- Instagram Section -->
-<section style="max-width: 600px; margin: 20px auto; padding: 20px; background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-    <h2 style="text-align: center; margin-bottom: 20px; color: #333;">Featured Post</h2>
-    <div style="display: flex; justify-content: center;">
-        <blockquote class="instagram-media"
-            data-instgrm-captioned
-            data-instgrm-permalink="https://www.instagram.com/reel/DRUgbKGEe2t/"
-            data-instgrm-version="14"
-            style="background:#FFF; border:0; border-radius:3px; box-shadow:0 0 1px 0 rgba(0,0,0,0.5),0 1px 10px 0 rgba(0,0,0,0.15); margin: 1px; max-width:540px; min-width:326px; padding:0; width:100%;">
-        </blockquote>
-        <script async src="//www.instagram.com/embed.js"></script>
+        </div>
+        <div class="current-time" id="currentTime"></div>
     </div>
-</section>
 
-</body>
-</html>
+    <header>
+        <h1>Bishop Daily</h1>
+        <p>Your daily dose of inspiration, weather updates, and content</p>
+    </header>
+
+    <div class="container">
+        <section class="section-box">
+            <h2>Latest from Instagram</h2>
+            <p style="text-align: center; margin-bottom: 20px;">Follow <a href="https://www.instagram.com/bishop_daily/" target="_blank" style="color: #E1306C;">@bishop_daily</a> for daily updates</p>
+            <div class="instagram-embed">
+                <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/bishop_daily/?utm_source=ig_embed&amp;utm_campaign=loading" data-instgrm-version="14" style="background:#FFF; border:0; border-radius:3px; box-shadow:0 0 1px 0 rgba(0,0,0,0.5),0 1px 10px 0 rgba(0,0,0,0.15); margin: 1px; max-width:540px; min-width:326px; padding:0; width:99.375%;"></blockquote>
+                <script async src="//www.instagram.com/embed.js"></script>
+            </div>
+        </section>
+
+        <section class="section-box">
+            <h2>Today's Weather Statistics</h2>
+            <div style="position: relative; overflow: hidden; margin-bottom: 30px;">
+                <div id="carousel" style="display: flex; transition: transform 0.5s ease;">
+                    <div id="windCard" style="min-width: 100%; background: #667eea; color: white; padding: 20px; text-align: center; cursor: pointer;">
+                        <div style="font-size: 2em; margin-bottom: 5px;">💨</div>
+                        <h3 style="margin: 5px 0; font-size: 1.2em;">Wind Speed</h3>
+                        <p id="windSpeed" style="font-size: 1.8em; font-weight: bold; margin: 5px 0;">--</p>
+                    </div>
+                    <div id="precipCard" style="min-width: 100%; background: #56CCF2; color: white; padding: 20px; text-align: center; cursor: pointer;">
+                        <div style="font-size: 2em; margin-bottom: 5px;">🌧️</div>
+                        <h3 style="margin: 5px 0; font-size: 1.2em;">Precipitation</h3>
+                        <p id="precipitation" style="font-size: 1.8em; font-weight: bold; margin: 5px 0;">--</p>
+                    </div>
+                    <div id="humidityCard" style="min-width: 100%; background: #F093FB; color: white; padding: 20px; text-align: center; cursor: pointer;">
+                        <div style="font-size: 2em; margin-bottom: 5px;">💧</div>
+                        <h3 style="margin: 5px 0; font-size: 1.2em;">Humidity</h3>
+                        <p id="humidity" style="font-size: 1.8em; font-weight: bold; margin: 5px 0;">--</p>
+                    </div>
+                </div>
+                <div style="text-align: center; margin-top: 15px;">
+                    <span onclick="goToSlide(0)" style="cursor: pointer; display: inline-block; width: 12px; height: 12px; margin: 0 5px; background: #667eea; border-radius: 50%; opacity: 1;" id="dot0"></span>
+                    <span onclick="goToSlide(1)" style="cursor: pointer; display: inline-block; width: 12px; height: 12px; margin: 0 5px; background: #56CCF2; border-radius: 50%; opacity: 0.4;" id="dot1"></span>
+                    <span onclick="goToSlide(2)" style="cursor: pointer; display: inline-block; width: 12px; height: 12px; margin: 0 5px; background: #F093FB; border-radius: 50%; opacity: 0.4;" id="dot2"></span>
+                </div>
+            </div>
+            <h3 style="margin-bottom: 15px;">Today's Weather Data</h3>
+            <canvas id="combinedChart" style="max-height: 400px;"></canvas>
+        </section>
+
+        <section class="instagram-section">
+            <h2>Follow on Instagram</h2>
+            <div class="intro">
+                <p>Stay connected with our daily posts, stories, and updates from @bishop_daily</p>
+            </div>
+            <div class="social-links">
+                <a href="https://www.instagram.com/bishop_daily/" target="_blank" rel="noopener noreferrer">Visit @bishop_daily on Instagram</a>
+            </div>
+            <div class="instagram-embed">
+                <blockquote class="instagram-media" data-instgrm-captioned data-instgrm-permalink="https://www.instagram.com/reel/DRUgbKGEe2t/" data-instgrm-version="14" style="background:#FFF; border:0; border-radius:3px; box-shadow:0 0 1px 0 rgba(0,0,0,0.5),0 1px 10px 0 rgba(0,0,0,0.15); margin: 1px; max-width:540px; min-width:326px; padding:0; width:99.375%;"></blockquote>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 Bishop Daily. All rights reserved.</p>
+        <p style="margin-top: 10px; font-size: 0.9em;">Weather powered by Open-Meteo API</p>
+    </footer>
+
+    <script>
+        let hourlyData = { time: [], temperature: [], windspeed: [], precipitation: [], humidity: [] };
+        let combinedChart;
+        let currentSlide = 0;
+        const totalSlides = 3;
+        const chartTypes = ['wind', 'precip', 'humidity'];
+
+        const weatherIcons = {
+            0: '☀️', 1: '🌤️', 2: '⛅', 3: '☁️',
+            45: '🌫️', 48: '🌫️',
+            51: '🌦️', 53: '🌦️', 55: '🌧️',
+            61: '🌧️', 63: '🌧️', 65: '🌧️',
+            71: '❄️', 73: '❄️', 75: '❄️',
+            80: '🌧️', 81: '🌧️', 82: '🌧️',
+            95: '⛈️', 96: '⛈️', 99: '⛈️'
+        };
+
+        const weatherDescriptions = {
+            0: 'Clear sky', 1: 'Mainly clear', 2: 'Partly cloudy', 3: 'Overcast',
+            45: 'Fog', 48: 'Depositing rime fog',
+            51: 'Light drizzle', 53: 'Moderate drizzle', 55: 'Dense drizzle',
+            61: 'Slight rain', 63: 'Moderate rain', 65: 'Heavy rain',
+            71: 'Slight snow', 73: 'Moderate snow', 75: 'Heavy snow',
+            80: 'Slight rain showers', 81: 'Moderate rain showers', 82: 'Violent rain showers',
+            95: 'Thunderstorm', 96: 'Thunderstorm with slight hail', 99: 'Thunderstorm with heavy hail'
+        };
+
+        function updateTime() {
+            const now = new Date();
+            const options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+            document.getElementById('currentTime').textContent = now.toLocaleDateString('en-US', options);
+        }
+
+        function goToSlide(index) {
+            currentSlide = index;
+            updateCarousel();
+            updateChart();
+        }
+
+        function updateCarousel() {
+            const carousel = document.getElementById('carousel');
+            carousel.style.transform = `translateX(-${currentSlide * 100}%)`;
+            for (let i = 0; i < totalSlides; i++) {
+                document.getElementById(`dot${i}`).style.opacity = i === currentSlide ? '1' : '0.4';
+            }
+        }
+
+        function updateChart() {
+            if (!combinedChart) return;
+            const type = chartTypes[currentSlide];
+            let data, label, color, borderColor;
+            
+            if (type === 'wind') {
+                data = hourlyData.windspeed;
+                label = 'Wind Speed (mph)';
+                color = 'rgba(102, 126, 234, 0.2)';
+                borderColor = '#667eea';
+            } else if (type === 'precip') {
+                data = hourlyData.precipitation;
+                label = 'Precipitation (in)';
+                color = 'rgba(86, 204, 242, 0.2)';
+                borderColor = '#56CCF2';
+            } else {
+                data = hourlyData.humidity;
+                label = 'Humidity (%)';
+                color = 'rgba(240,
