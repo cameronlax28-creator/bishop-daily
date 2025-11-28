@@ -280,4 +280,100 @@
             } else {
                 data = hourlyData.humidity;
                 label = 'Humidity (%)';
-                color = 'rgba(240,
+                color = 'rgba(240, 128, 128, 0.2)';
+            borderColor = '#F08080';
+        }
+
+        combinedChart.data.labels = hourlyData.time;
+        combinedChart.data.datasets[0].data = data;
+        combinedChart.data.datasets[0].label = label;
+        combinedChart.data.datasets[0].backgroundColor = color;
+        combinedChart.data.datasets[0].borderColor = borderColor;
+        combinedChart.update();
+    }
+
+    // Delaware, OH coordinates (Ohio Wesleyan University)
+    const lat = 40.2987;
+    const lon = -83.0680;
+
+    async function fetchWeather() {
+        try {
+            const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code,wind_speed_10m,relative_humidity_2m,precipitation&hourly=temperature_2m,wind_speed_10m,precipitation,relative_humidity_2m&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch&timezone=America/New_York`;
+            const response = await fetch(url);
+            const data = await response.json();
+            
+            // Update current weather display
+            const temp = Math.round(data.current.temperature_2m);
+            const code = data.current.weather_code;
+            const icon = weatherIcons[code] || '🌤️';
+            const desc = weatherDescriptions[code] || 'Unknown';
+            const wind = Math.round(data.current.wind_speed_10m);
+            const humidity = data.current.relative_humidity_2m;
+            const precip = data.current.precipitation || 0;
+            
+            document.getElementById('weatherIcon').textContent = icon;
+            document.getElementById('weatherDescription').textContent = desc;
+            document.getElementById('weatherTemp').textContent = `${temp}°F`;
+            
+            // Update stat cards
+            document.getElementById('windSpeed').textContent = `${wind} mph`;
+            document.getElementById('precipitation').textContent = `${precip} in`;
+            document.getElementById('humidity').textContent = `${humidity}%`;
+            
+            // Store hourly data for charts
+            if (data.hourly) {
+                hourlyData.time = data.hourly.time.slice(0, 24).map(t => {
+                    const date = new Date(t);
+                    return date.toLocaleTimeString('en-US', { hour: 'numeric' });
+                });
+                hourlyData.temperature = data.hourly.temperature_2m.slice(0, 24);
+                hourlyData.windspeed = data.hourly.wind_speed_10m.slice(0, 24);
+                hourlyData.precipitation = data.hourly.precipitation.slice(0, 24);
+                hourlyData.humidity = data.hourly.relative_humidity_2m.slice(0, 24);
+                
+                initChart();
+            }
+        } catch (error) {
+            console.error('Weather fetch error:', error);
+            document.getElementById('weatherDescription').textContent = 'Weather unavailable';
+        }
+    }
+
+    function initChart() {
+        const ctx = document.getElementById('combinedChart');
+        if (!ctx) return;
+        
+        combinedChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: hourlyData.time,
+                datasets: [{
+                    label: 'Wind Speed (mph)',
+                    data: hourlyData.windspeed,
+                    backgroundColor: 'rgba(102, 126, 234, 0.2)',
+                    borderColor: '#667eea',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: true }
+                },
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+    }
+
+    // Initialize everything
+    updateTime();
+    setInterval(updateTime, 1000);
+    fetchWeather();
+    </script>
+</body>
+</html>
