@@ -219,8 +219,8 @@
         let hourlyData = { time: [], temperature: [], windspeed: [], precipitation: [], humidity: [] };
         let combinedChart;
         let currentSlide = 0;
-        const totalSlides = 3;
-        const chartTypes = ['wind', 'precip', 'humidity'];
+        const totalSlides = 4;
+        const chartTypes = ['wind', 'precip', 'humidity', 'temp'];
 
         const weatherIcons = {
             0: '☀️', 1: '🌤️', 2: '⛅', 3: '☁️',
@@ -282,6 +282,11 @@
                 label = 'Humidity (%)';
                 color = 'rgba(240, 128, 128, 0.2)';
             borderColor = '#F08080';
+        } else if (type === 'temp') {
+            data = hourlyData.temperature;
+            label = 'Temperature (°F)';
+            color = 'rgba(255, 107, 107, 0.2)';
+            borderColor = '#FF6B6B';
         }
 
         combinedChart.data.labels = hourlyData.time;
@@ -374,6 +379,11 @@
     updateTime();
     setInterval(updateTime, 1000);
     fetchWeather();
+    // Auto-rotate carousel every 5 seconds
+    setInterval(() => {
+        currentSlide = (currentSlide + 1) % totalSlides;
+        goToSlide(currentSlide);
+    }, 5000);
     </script>
 </body>
 </html>
