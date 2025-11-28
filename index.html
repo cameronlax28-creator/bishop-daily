@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bishop Daily</title>
+  <style>
+    :root {
+      --owu-red: #C4122E;
+      --owu-black: #100F0D;
+      --owu-white: #FFFFFF;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: var(--owu-white);
+      color: #222;
+    }
+
+    header {
+      background-color: var(--owu-red);
+      color: var(--owu-white);
+      padding: 16px 0;
+      text-align: center;
+      letter-spacing: 2px;
+    }
+
+    nav {
+      background-color: var(--owu-black);
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    nav a {
+      color: var(--owu-white);
+      text-decoration: none;
+      padding: 12px 20px;
+      display: inline-block;
+      transition: background .2s;
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    nav a:hover {
+      background: var(--owu-red);
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 28px auto;
+      padding: 20px;
+      background: #fafafa;
+      border-radius: 8px;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    h2 {
+      color: var(--owu-red);
+      margin-top: 0;
+    }
+
+    .section {
+      margin-bottom: 36px;
+    }
+
+    .weather-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px;
+      border-radius: 8px;
+      background: var(--owu-white);
+      border: 1px solid #ddd;
+    }
+
+    .weather-main {
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    .weather-extra {
+      font-size: 0.9rem;
+      color: #555;
+    }
+
+    #weather img {
+      vertical-align: middle;
+      margin-right: 8px;
+    }
+
+    ul {
+      padding-left: 18px;
+    }
+
+    footer {
+      background: var(--owu-black);
+      color: var(--owu-white);
+      padding: 10px 0;
+      text-align: center;
+      margin-top: 40px;
+      font-size: .9em;
+    }
+
+    .tagline {
+      margin: 4px 0 0;
+      font-size: 0.95rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Bishop Daily</h1>
+    <p class="tagline">Your daily campus weather and important events</p>
+  </header>
+
+  <nav>
+    <a href="#home">Home</a>
+    <a href="#weather-section">Weather</a>
+    <a href="#events">Events</a>
+    <a href="#contact">Contact</a>
+  </nav>
+
+  <main class="container" id="home">
+    <section class="section" id="weather-section">
+      <h2>Today's Weather Update</h2>
+      <div id="weather">
+        <div class="weather-card">
+          <span>Loading weather...</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="events">
+      <h2>Important Upcoming Events</h2>
+      <ul>
+        <li>Nov 28 - Thanksgiving Break begins</li>
+        <li>Dec 3 - Campus Dance Showcase @ 7pm, Chappelear Drama Center</li>
+        <li>Dec 10 - Final Exams Begin</li>
+      </ul>
+    </section>
+
+    <section class="section" id="contact">
+      <h2>About / Contact</h2>
+      <p>Bishop Daily provides Ohio Wesleyan students with quick daily weather updates and a short list of key campus events.</p>
+      <p>Questions, tips, or events to feature? Email: <strong>bishopdaily@owu.edu</strong></p>
+    </section>
+  </main>
+
+  <footer>
+    &copy; 2025 Bishop Daily | Ohio Wesleyan University
+  </footer>
+
+  <script>
+    const apiKey = "YOUR_API_KEY_HERE";
+    const city = "Columbus";
+    const country = "US";
+
+    const url =
+      `https://api.openweathermap.org/data/2.5/weather?q=${city},${country}&units=imperial&appid=${apiKey}`;
+
+    fetch(url)
+      .then(response => response.json())
+      .then(data => {
+        if (data.cod !== 200) {
+          throw new Error(data.message || "API error");
+        }
+
+        const temp = Math.round(data.main.temp);
+        const desc = data.weather[0].description;
+        const high = Math.round(data.main.temp_max);
+        const low = Math.round(data.main.temp_min);
+        const feels = Math.round(data.main.feels_like);
+        const icon = data.weather[0].icon;
+
+        const weatherDiv = document.getElementById("weather");
+        weatherDiv.innerHTML = `
+          <div class="weather-card">
+            <div>
+              <img src="https://openweathermap.org/img/wn/${icon}@2x.png"
+                   alt="${desc}">
+            </div>
+            <div>
+              <div class="weather-main">
+                ${city}, OH - ${desc.charAt(0).toUpperCase() + desc.slice(1)}
+              </div>
+              <div class="weather-extra">
+                Now: ${temp}&deg;F (feels like ${feels}&deg;F) |
+                High: ${high}&deg;F | Low: ${low}&deg;F
+              </div>
+            </div>
+          </div>
+        `;
+      })
+      .catch(error => {
+        const weatherDiv = document.getElementById("weather");
+        weatherDiv.innerHTML = `
+          <div class="weather-card">
+            <span>Unable to load weather data right now.</span>
+          </div>
+        `;
+        console.error(error);
+      });
+  </script>
+</body>
+</html>
