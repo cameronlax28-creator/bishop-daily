@@ -10,14 +10,13 @@
       --owu-black: #100F0D;
       --owu-white: #FFFFFF;
     }
-
+    * { box-sizing: border-box; }
     body {
       font-family: Arial, sans-serif;
       margin: 0;
       background: var(--owu-white);
       color: #222;
     }
-
     header {
       background-color: var(--owu-red);
       color: var(--owu-white);
@@ -25,14 +24,12 @@
       text-align: center;
       letter-spacing: 2px;
     }
-
     nav {
       background-color: var(--owu-black);
       display: flex;
       justify-content: center;
       flex-wrap: wrap;
     }
-
     nav a {
       color: var(--owu-white);
       text-decoration: none;
@@ -42,29 +39,17 @@
       font-weight: 600;
       font-size: 0.95rem;
     }
-
-    nav a:hover {
-      background: var(--owu-red);
-    }
-
+    nav a:hover { background: var(--owu-red); }
     .container {
       max-width: 900px;
       margin: 28px auto;
       padding: 20px;
       background: #fafafa;
       border-radius: 8px;
-      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+      box-shadow: 0 3px 8px rgba(0,0,0,0.08);
     }
-
-    h2 {
-      color: var(--owu-red);
-      margin-top: 0;
-    }
-
-    .section {
-      margin-bottom: 36px;
-    }
-
+    h2 { color: var(--owu-red); margin-top: 0; }
+    .section { margin-bottom: 36px; }
     .weather-card {
       display: flex;
       align-items: center;
@@ -74,26 +59,54 @@
       background: var(--owu-white);
       border: 1px solid #ddd;
     }
-
-    .weather-main {
-      font-size: 1.1rem;
+    .weather-main { font-size: 1.1rem; font-weight: 600; }
+    .weather-extra { font-size: 0.9rem; color: #555; }
+    #weather img { vertical-align: middle; margin-right: 8px; }
+    .weather-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+    .weather-tab {
+      padding: 10px 18px;
+      border: 2px solid var(--owu-red);
+      background: var(--owu-white);
+      color: var(--owu-red);
+      border-radius: 6px;
+      cursor: pointer;
       font-weight: 600;
+      transition: all 0.2s;
     }
-
-    .weather-extra {
-      font-size: 0.9rem;
-      color: #555;
+    .weather-tab:hover { background: #ffe5e5; }
+    .weather-tab.active {
+      background: var(--owu-red);
+      color: var(--owu-white);
     }
-
-    #weather img {
-      vertical-align: middle;
-      margin-right: 8px;
+    .weather-detail {
+      display: none;
+      padding: 20px;
+      background: var(--owu-white);
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      text-align: center;
     }
-
-    ul {
-      padding-left: 18px;
+    .weather-detail.active { display: block; }
+    .weather-detail .value {
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: var(--owu-red);
     }
-
+    .weather-detail .label {
+      font-size: 1rem;
+      color: #666;
+      margin-top: 8px;
+    }
+    .weather-detail .icon {
+      font-size: 2rem;
+      margin-bottom: 10px;
+    }
+    ul { padding-left: 18px; }
     footer {
       background: var(--owu-black);
       color: var(--owu-white);
@@ -102,11 +115,7 @@
       margin-top: 40px;
       font-size: .9em;
     }
-
-    .tagline {
-      margin: 4px 0 0;
-      font-size: 0.95rem;
-    }
+    .tagline { margin: 4px 0 0; font-size: 0.95rem; }
   </style>
 </head>
 <body>
@@ -114,24 +123,51 @@
     <h1>Bishop Daily</h1>
     <p class="tagline">Your daily campus weather and important events</p>
   </header>
-
   <nav>
     <a href="#home">Home</a>
     <a href="#weather-section">Weather</a>
     <a href="#events">Events</a>
     <a href="#contact">Contact</a>
   </nav>
-
   <main class="container" id="home">
     <section class="section" id="weather-section">
       <h2>Today's Weather Update</h2>
       <div id="weather">
-        <div class="weather-card">
-          <span>Loading weather...</span>
+        <div class="weather-card"><span>Loading weather...</span></div>
+      </div>
+      <div class="weather-tabs" id="weather-tabs" style="display:none;">
+        <button class="weather-tab active" data-tab="temp">Temperature</button>
+        <button class="weather-tab" data-tab="wind">Wind</button>
+        <button class="weather-tab" data-tab="humidity">Humidity</button>
+        <button class="weather-tab" data-tab="precip">Precipitation</button>
+      </div>
+      <div id="weather-details">
+        <div class="weather-detail active" id="detail-temp">
+          <div class="icon">🌡️</div>
+          <div class="value" id="temp-value">--</div>
+          <div class="label">Current Temperature</div>
+          <div class="label" id="temp-extra"></div>
+        </div>
+        <div class="weather-detail" id="detail-wind">
+          <div class="icon">💨</div>
+          <div class="value" id="wind-value">--</div>
+          <div class="label">Wind Speed</div>
+          <div class="label" id="wind-extra"></div>
+        </div>
+        <div class="weather-detail" id="detail-humidity">
+          <div class="icon">💧</div>
+          <div class="value" id="humidity-value">--</div>
+          <div class="label">Humidity</div>
+          <div class="label" id="humidity-extra"></div>
+        </div>
+        <div class="weather-detail" id="detail-precip">
+          <div class="icon">🌧️</div>
+          <div class="value" id="precip-value">--</div>
+          <div class="label">Precipitation (last 1h)</div>
+          <div class="label" id="precip-extra"></div>
         </div>
       </div>
     </section>
-
     <section class="section" id="events">
       <h2>Important Upcoming Events</h2>
       <ul>
@@ -140,68 +176,69 @@
         <li>Dec 10 - Final Exams Begin</li>
       </ul>
     </section>
-
     <section class="section" id="contact">
       <h2>About / Contact</h2>
       <p>Bishop Daily provides Ohio Wesleyan students with quick daily weather updates and a short list of key campus events.</p>
       <p>Questions, tips, or events to feature? Email: <strong>bishopdaily@owu.edu</strong></p>
     </section>
   </main>
-
-  <footer>
-    &copy; 2025 Bishop Daily | Ohio Wesleyan University
-  </footer>
-
+  <footer>&copy; 2025 Bishop Daily | Ohio Wesleyan University</footer>
   <script>
     const apiKey = "YOUR_API_KEY_HERE";
-    const city = "Columbus";
+    const city = "Delaware";
+    const state = "OH";
     const country = "US";
-
-    const url =
-      `https://api.openweathermap.org/data/2.5/weather?q=${city},${country}&units=imperial&appid=${apiKey}`;
-
+    const url = `https://api.openweathermap.org/data/2.5/weather?q=${city},${state},${country}&units=imperial&appid=${apiKey}`;
+    document.querySelectorAll('.weather-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.weather-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.weather-detail').forEach(d => d.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById('detail-' + tab.dataset.tab).classList.add('active');
+      });
+    });
     fetch(url)
-      .then(response => response.json())
+      .then(r => r.json())
       .then(data => {
-        if (data.cod !== 200) {
-          throw new Error(data.message || "API error");
-        }
-
+        if (data.cod !== 200) throw new Error(data.message);
         const temp = Math.round(data.main.temp);
-        const desc = data.weather[0].description;
+        const feels = Math.round(data.main.feels_like);
         const high = Math.round(data.main.temp_max);
         const low = Math.round(data.main.temp_min);
-        const feels = Math.round(data.main.feels_like);
+        const humidity = data.main.humidity;
+        const windSpeed = Math.round(data.wind.speed);
+        const windDir = data.wind.deg;
+        const desc = data.weather[0].description;
         const icon = data.weather[0].icon;
-
-        const weatherDiv = document.getElementById("weather");
-        weatherDiv.innerHTML = `
+        const rain = data.rain ? data.rain['1h'] || 0 : 0;
+        const snow = data.snow ? data.snow['1h'] || 0 : 0;
+        const precip = rain + snow;
+        document.getElementById('weather').innerHTML = `
           <div class="weather-card">
+            <img src="https://openweathermap.org/img/wn/${icon}@2x.png" alt="${desc}">
             <div>
-              <img src="https://openweathermap.org/img/wn/${icon}@2x.png"
-                   alt="${desc}">
+              <div class="weather-main">${city}, ${state} - ${desc.charAt(0).toUpperCase() + desc.slice(1)}</div>
+              <div class="weather-extra">Now: ${temp}°F | Feels like: ${feels}°F</div>
             </div>
-            <div>
-              <div class="weather-main">
-                ${city}, OH - ${desc.charAt(0).toUpperCase() + desc.slice(1)}
-              </div>
-              <div class="weather-extra">
-                Now: ${temp}&deg;F (feels like ${feels}&deg;F) |
-                High: ${high}&deg;F | Low: ${low}&deg;F
-              </div>
-            </div>
-          </div>
-        `;
+          </div>`;
+        document.getElementById('weather-tabs').style.display = 'flex';
+        document.getElementById('temp-value').textContent = temp + '°F';
+        document.getElementById('temp-extra').textContent = `Feels like ${feels}°F | High: ${high}°F | Low: ${low}°F`;
+        document.getElementById('wind-value').textContent = windSpeed + ' mph';
+        document.getElementById('wind-extra').textContent = `Direction: ${getWindDirection(windDir)} (${windDir}°)`;
+        document.getElementById('humidity-value').textContent = humidity + '%';
+        document.getElementById('humidity-extra').textContent = humidity > 70 ? 'High humidity - feels muggy' : humidity < 30 ? 'Low humidity - feels dry' : 'Comfortable humidity level';
+        document.getElementById('precip-value').textContent = precip > 0 ? precip.toFixed(2) + ' mm' : 'None';
+        document.getElementById('precip-extra').textContent = precip > 0 ? 'Precipitation detected recently' : 'No precipitation in the last hour';
       })
-      .catch(error => {
-        const weatherDiv = document.getElementById("weather");
-        weatherDiv.innerHTML = `
-          <div class="weather-card">
-            <span>Unable to load weather data right now.</span>
-          </div>
-        `;
-        console.error(error);
+      .catch(err => {
+        document.getElementById('weather').innerHTML = '<div class="weather-card"><span>Unable to load weather data.</span></div>';
+        console.error(err);
       });
+    function getWindDirection(deg) {
+      const dirs = ['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','WNW','NW','NNW'];
+      return dirs[Math.round(deg / 22.5) % 16];
+    }
   </script>
 </body>
 </html>
