@@ -1,0 +1,259 @@
+import React, { useState } from 'react';
+import { ChevronLeft, ChevronRight, Shuffle, RotateCcw } from 'lucide-react';
+
+const QuizletApp = () => {
+  const flashcards = [
+    // Chapter 9
+    { q: "What is capital structure?", a: "The mix of financing sources a company uses to fund operations and growth" },
+    { q: "What are the two components of capital structure?", a: "1) Debt (borrowed funds/liabilities) and 2) Equity (owner investments and retained earnings)" },
+    { q: "What is the cost of debt financing?", a: "Interest expense, which is tax-deductible" },
+    { q: "What is the cost of equity financing?", a: "Dividends (not tax-deductible) and dilution of ownership" },
+    { q: "What is a liability?", a: "An obligation to pay cash, transfer assets, or provide services in the future" },
+    { q: "What is a current liability?", a: "A liability due within one year or the operating cycle, whichever is longer" },
+    { q: "What is a long-term liability?", a: "A liability due beyond one year or the operating cycle" },
+    { q: "What is deferred revenue?", a: "Cash received before services are performed or goods are delivered; it's a liability because the company owes the service or product" },
+    { q: "How do you calculate interest on a note?", a: "Interest = Principal × Rate × Time" },
+    { q: "Calculate interest on a $5,000 note at 8% annual interest for 6 months.", a: "$5,000 × 0.08 × (6/12) = $200" },
+    { q: "What are the financial statement effects of borrowing on a note payable?", a: "Assets (Cash) increase; Liabilities (Notes Payable) increase" },
+    { q: "What are the financial statement effects of accruing interest on a note?", a: "Liabilities (Interest Payable) increase; Stockholders' Equity decreases (Interest Expense reduces retained earnings)" },
+    { q: "What are the financial statement effects of paying the note payable and interest?", a: "Assets (Cash) decrease; Liabilities (Notes Payable and Interest Payable) decrease" },
+    { q: "What is a line of credit?", a: "A pre-approved borrowing arrangement where a company can borrow up to a maximum amount as needed and repay flexibly" },
+    { q: "What is commercial paper?", a: "Short-term, unsecured promissory notes issued by large corporations, typically for 30-270 days" },
+    { q: "What are examples of current liabilities?", a: "Accounts payable, short-term notes payable, current portion of long-term debt, accrued expenses (wages, interest, taxes), unearned revenue, payroll liabilities" },
+    { q: "What are examples of long-term liabilities?", a: "Bonds payable, long-term notes payable, mortgage payable, lease liabilities, pension obligations, deferred tax liabilities" },
+    { q: "What is a contingent liability?", a: "A potential obligation that depends on a future event occurring" },
+    { q: "What are examples of contingent liabilities?", a: "Pending lawsuits, product warranties, environmental cleanup obligations, loan guarantees" },
+    { q: "When do you RECORD a contingent liability?", a: "When the loss is probable AND the amount can be reasonably estimated" },
+    { q: "When do you DISCLOSE a contingent liability in the notes?", a: "When the loss is reasonably possible (but not probable or not estimable)" },
+    { q: "When do you IGNORE a contingent liability?", a: "When the loss is remote (unlikely to occur)" },
+    { q: "What is a lease?", a: "A contract to use an asset for a specified period in exchange for periodic payments" },
+    { q: "Why would a company lease an asset instead of buying it?", a: "To conserve cash, avoid obsolescence risk, gain flexibility, and potentially receive tax benefits" },
+    { q: "What is a bond?", a: "A long-term debt security where the issuer borrows money and promises to repay the principal with interest" },
+    { q: "What is the stated amount of a bond?", a: "The face value or principal amount to be repaid at maturity" },
+    { q: "What is the maturity date of a bond?", a: "The date when the principal must be repaid" },
+    { q: "How often are bond interest payments typically made?", a: "Semi-annually (twice per year)" },
+    { q: "What is the stated rate of interest on a bond?", a: "The coupon rate printed on the bond that determines the cash interest payments" },
+    { q: "What is a bond premium?", a: "When a bond is issued above its face value (occurs when stated rate > market rate)" },
+    { q: "What is a bond discount?", a: "When a bond is issued below its face value (occurs when stated rate < market rate)" },
+    { q: "Why do bond premiums and discounts arise?", a: "They arise when the stated interest rate differs from the market interest rate at the time of issuance" },
+    { q: "How does a bond premium affect interest expense?", a: "Premium amortization reduces interest expense over the life of the bond" },
+    { q: "How does a bond discount affect interest expense?", a: "Discount amortization increases interest expense over the life of the bond" },
+    
+    // Chapter 10
+    { q: "What is a corporation?", a: "A legal entity that is separate and distinct from its owners, with its own rights and responsibilities" },
+    { q: "Who regulates corporations?", a: "State governments (corporations are created under state law)" },
+    { q: "What is the document that governs a corporation?", a: "Articles of incorporation (also called the corporate charter)" },
+    { q: "What are advantages of the corporate form?", a: "Limited liability for owners, easy transfer of ownership, ability to raise capital more easily, unlimited life, professional management" },
+    { q: "What are disadvantages of the corporate form?", a: "Double taxation (corporate and personal levels), increased regulation and costs, separation of ownership and management" },
+    { q: "What is contributed capital?", a: "The total amount of cash and other assets invested in the company by stockholders" },
+    { q: "How does contributed capital fit into stockholders' equity?", a: "It is one of the two main components of stockholders' equity (contributed capital and retained earnings)" },
+    { q: "What is authorized stock?", a: "The maximum number of shares a corporation is legally permitted to issue, as stated in its charter" },
+    { q: "What is issued stock?", a: "Shares that have been sold to stockholders (may include treasury stock)" },
+    { q: "What is outstanding stock?", a: "Issued shares currently held by stockholders (Issued shares minus Treasury shares)" },
+    { q: "What is par value?", a: "An arbitrary nominal value assigned to each share of stock, often set very low or at zero" },
+    { q: "Company issues 2,000 shares of $2 par value stock for $15 per share. What are the financial statement effects?", a: "Cash increases $30,000; Common Stock increases $4,000; Additional Paid-in Capital increases $26,000" },
+    { q: "What is treasury stock?", a: "A corporation's own stock that has been issued, repurchased by the company, and is being held by the company" },
+    { q: "Why do companies repurchase their own stock (treasury stock)?", a: "To return excess cash to shareholders, support stock price, reduce outstanding shares (increase EPS), or use for employee compensation plans" },
+    { q: "What are the financial statement effects of purchasing treasury stock?", a: "Assets (Cash) decrease; Stockholders' Equity (Treasury Stock, a contra-equity account) decreases" },
+    { q: "What happens when treasury stock is sold at a price higher than its cost (a 'gain')?", a: "Cash increases; Treasury Stock decreases; Additional Paid-in Capital increases (NO gain is recorded on the income statement)" },
+    { q: "What happens when treasury stock is sold at a price lower than its cost (a 'loss')?", a: "Cash increases; Treasury Stock decreases; Additional Paid-in Capital decreases (or Retained Earnings if APIC from treasury stock is insufficient); NO loss is recorded on the income statement" },
+    { q: "How is retained earnings calculated?", a: "Beginning Retained Earnings + Net Income - Dividends = Ending Retained Earnings" },
+    { q: "What are dividends?", a: "Distributions of a company's earnings to its shareholders" },
+    { q: "Why do companies pay dividends?", a: "To return cash to shareholders, signal financial strength and confidence, and attract investors seeking income" },
+    { q: "What is the declaration date in the dividend cycle?", a: "The date the board of directors announces the dividend; a liability is created on this date (KEY DATE for accountants)" },
+    { q: "What is the date of record in the dividend cycle?", a: "The date that determines which shareholders are entitled to receive the dividend" },
+    { q: "What is the payment date in the dividend cycle?", a: "The date when cash is actually distributed to shareholders; the liability is eliminated (KEY DATE for accountants)" },
+    { q: "Which dividend dates are most important to accountants?", a: "Declaration date (when liability is recorded) and payment date (when liability is paid)" },
+    { q: "What is a stock dividend?", a: "Distribution of additional shares of stock to shareholders (not cash); increases shares outstanding, transfers amount from retained earnings to contributed capital" },
+    { q: "What is a stock split?", a: "Increases the number of shares outstanding and proportionally reduces the par value per share; NO accounting entry is required; total stockholders' equity remains unchanged" },
+    { q: "How does a stock split differ from a stock dividend?", a: "A stock split requires no journal entry and reduces par value; a stock dividend requires an entry transferring from retained earnings to contributed capital" },
+    
+    // Chapter 12
+    { q: "What is vertical analysis?", a: "Expressing each line item on a financial statement as a percentage of a base amount (sales for income statement, total assets for balance sheet)" },
+    { q: "What is horizontal analysis?", a: "Examining changes in financial statement items over time, showing dollar and percentage changes year-to-year" },
+    { q: "What does the gross profit ratio measure?", a: "The percentage of each sales dollar remaining after deducting cost of goods sold; measures pricing strategy and cost management" },
+    { q: "What is the formula for gross profit ratio?", a: "(Sales - Cost of Goods Sold) / Sales  OR  Gross Profit / Sales" },
+    { q: "What does the average collection period measure?", a: "The average number of days it takes to collect accounts receivable" },
+    { q: "What is the formula for average collection period?", a: "365 / Accounts Receivable Turnover  OR  Average Accounts Receivable / (Credit Sales / 365)" },
+    { q: "What does inventory turnover measure?", a: "How many times inventory is sold and replaced during a period; indicates inventory management efficiency" },
+    { q: "What is the formula for inventory turnover?", a: "Cost of Goods Sold / Average Inventory" },
+    { q: "What does the current ratio measure?", a: "A company's ability to pay current liabilities with current assets; measures short-term liquidity" },
+    { q: "What is the formula for current ratio?", a: "Current Assets / Current Liabilities" },
+    { q: "What does a current ratio greater than 1 indicate?", a: "The company has more current assets than current liabilities, suggesting good short-term liquidity" },
+    { q: "What does the debt-to-equity ratio measure?", a: "Financial leverage and the proportion of financing from creditors versus owners; indicates financial risk" },
+    { q: "What is the formula for debt-to-equity ratio?", a: "Total Liabilities / Total Stockholders' Equity" },
+    { q: "What do profitability ratios measure?", a: "A company's ability to generate earnings relative to sales, assets, or equity" },
+    { q: "What do liquidity ratios measure?", a: "A company's ability to meet short-term obligations and convert assets to cash quickly" },
+    { q: "What do solvency ratios measure?", a: "A company's ability to meet long-term obligations and survive over the long term" },
+    { q: "What do efficiency ratios measure?", a: "How effectively a company uses its assets to generate sales and manage operations" },
+    { q: "What do market ratios measure?", a: "Investor perspectives on the company's performance and future prospects" },
+    { q: "If current ratio is 2.0 and the company pays off accounts payable with cash, what happens to the current ratio?", a: "Current ratio increases (both current assets and current liabilities decrease by the same amount, which increases a ratio greater than 1)" },
+    { q: "If current ratio is 2.0 and the company purchases inventory on account, what happens to the current ratio?", a: "Current ratio decreases (current assets increase while current liabilities also increase, which decreases a ratio greater than 1)" },
+    { q: "If current ratio is 2.0 and the company purchases inventory with cash, what happens to the current ratio?", a: "No change (one current asset increases while another decreases; current liabilities unchanged)" },
+    { q: "If current ratio is 2.0 and the company collects accounts receivable, what happens to the current ratio?", a: "No change (cash increases and accounts receivable decreases by the same amount; both are current assets)" },
+    { q: "If current ratio is 2.0 and the company borrows long-term debt and receives cash, what happens to the current ratio?", a: "Current ratio increases (current assets increase with no change in current liabilities)" },
+    { q: "What does a high inventory turnover ratio indicate?", a: "Efficient inventory management; inventory is selling quickly; less risk of obsolescence" },
+    { q: "What does a low inventory turnover ratio indicate?", a: "Slow-moving inventory; potential obsolescence issues; possible overstocking" },
+    { q: "What does a high debt-to-equity ratio indicate?", a: "Higher financial leverage and risk; greater reliance on debt financing" },
+    { q: "What does a low debt-to-equity ratio indicate?", a: "Lower financial risk; greater reliance on equity financing; more conservative capital structure" },
+    { q: "What does ROA (Return on Assets) measure?", a: "How efficiently a company uses its assets to generate profit" },
+    { q: "What does ROE (Return on Equity) measure?", a: "The return generated on shareholders' equity; profitability from the owners' perspective" },
+    { q: "What does EPS (Earnings Per Share) measure?", a: "Net income available to common shareholders divided by the number of shares outstanding" },
+    { q: "What does the P/E ratio (Price-Earnings Ratio) measure?", a: "How much investors are willing to pay per dollar of earnings; indicates growth expectations" },
+    { q: "What does the quick ratio measure?", a: "A company's ability to pay current liabilities using only the most liquid assets (excludes inventory)" },
+    { q: "What is the formula for quick ratio?", a: "(Current Assets - Inventory) / Current Liabilities  OR (Cash + Marketable Securities + Accounts Receivable) / Current Liabilities" },
+    { q: "Why is vertical analysis useful?", a: "It allows comparison of companies of different sizes and identifies trends in the composition of financial statements" },
+    { q: "Why is horizontal analysis useful?", a: "It reveals growth trends, identifies unusual changes, and helps assess performance over time" }
+  ];
+
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isFlipped, setIsFlipped] = useState(false);
+  const [cards, setCards] = useState(flashcards);
+  const [studiedCards, setStudiedCards] = useState(new Set());
+
+  const handleNext = () => {
+    setIsFlipped(false);
+    setCurrentIndex((prev) => (prev + 1) % cards.length);
+  };
+
+  const handlePrev = () => {
+    setIsFlipped(false);
+    setCurrentIndex((prev) => (prev - 1 + cards.length) % cards.length);
+  };
+
+  const handleFlip = () => {
+    setIsFlipped(!isFlipped);
+    if (!isFlipped) {
+      setStudiedCards(new Set([...studiedCards, currentIndex]));
+    }
+  };
+
+  const handleShuffle = () => {
+    const shuffled = [...cards].sort(() => Math.random() - 0.5);
+    setCards(shuffled);
+    setCurrentIndex(0);
+    setIsFlipped(false);
+  };
+
+  const handleReset = () => {
+    setCards(flashcards);
+    setCurrentIndex(0);
+    setIsFlipped(false);
+    setStudiedCards(new Set());
+  };
+
+  const currentCard = cards[currentIndex];
+  const progress = ((studiedCards.size / cards.length) * 100).toFixed(0);
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+      <div className="max-w-4xl mx-auto">
+        <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+          <h1 className="text-3xl font-bold text-gray-800 mb-2">Accounting Quizlet</h1>
+          <p className="text-gray-600">Chapters 9, 10, and 12</p>
+          
+          <div className="mt-4">
+            <div className="flex justify-between text-sm text-gray-600 mb-2">
+              <span>Progress: {studiedCards.size} / {cards.length} cards studied</span>
+              <span>{progress}%</span>
+            </div>
+            <div className="w-full bg-gray-200 rounded-full h-2">
+              <div 
+                className="bg-indigo-600 h-2 rounded-full transition-all duration-300"
+                style={{ width: `${progress}%` }}
+              ></div>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-lg shadow-lg p-8 mb-6">
+          <div className="text-center mb-4 text-gray-600 font-medium">
+            Card {currentIndex + 1} of {cards.length}
+          </div>
+          
+          <div 
+            onClick={handleFlip}
+            className="relative w-full h-96 cursor-pointer perspective-1000"
+          >
+            <div className={`relative w-full h-full transition-transform duration-500 transform-style-3d ${isFlipped ? 'rotate-y-180' : ''}`}>
+              <div className="absolute w-full h-full backface-hidden">
+                <div className="w-full h-full bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl shadow-xl flex items-center justify-center p-8">
+                  <div className="text-center">
+                    <div className="text-white text-sm font-semibold mb-4 uppercase tracking-wide">Question</div>
+                    <p className="text-white text-2xl font-medium leading-relaxed">{currentCard.q}</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="absolute w-full h-full backface-hidden rotate-y-180">
+                <div className="w-full h-full bg-gradient-to-br from-teal-500 to-green-600 rounded-xl shadow-xl flex items-center justify-center p-8">
+                  <div className="text-center">
+                    <div className="text-white text-sm font-semibold mb-4 uppercase tracking-wide">Answer</div>
+                    <p className="text-white text-xl leading-relaxed">{currentCard.a}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="text-center mt-6 text-gray-500 text-sm">
+            Click card to flip
+          </div>
+        </div>
+
+        <div className="flex gap-4 justify-center mb-6">
+          <button
+            onClick={handlePrev}
+            className="flex items-center gap-2 bg-white hover:bg-gray-50 text-gray-700 font-semibold py-3 px-6 rounded-lg shadow transition-all"
+          >
+            <ChevronLeft size={20} />
+            Previous
+          </button>
+          
+          <button
+            onClick={handleNext}
+            className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-lg shadow transition-all"
+          >
+            Next
+            <ChevronRight size={20} />
+          </button>
+        </div>
+
+        <div className="flex gap-4 justify-center">
+          <button
+            onClick={handleShuffle}
+            className="flex items-center gap-2 bg-white hover:bg-gray-50 text-gray-700 font-medium py-2 px-5 rounded-lg shadow transition-all"
+          >
+            <Shuffle size={18} />
+            Shuffle
+          </button>
+          
+          <button
+            onClick={handleReset}
+            className="flex items-center gap-2 bg-white hover:bg-gray-50 text-gray-700 font-medium py-2 px-5 rounded-lg shadow transition-all"
+          >
+            <RotateCcw size={18} />
+            Reset
+          </button>
+        </div>
+
+        <style jsx>{`
+          .perspective-1000 {
+            perspective: 1000px;
+          }
+          .transform-style-3d {
+            transform-style: preserve-3d;
+          }
+          .backface-hidden {
+            backface-visibility: hidden;
+          }
+          .rotate-y-180 {
+            transform: rotateY(180deg);
+          }
+        `}</style>
+      </div>
+    </div>
+  );
+};
+
+export default QuizletApp;
