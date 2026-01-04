@@ -1,0 +1,172 @@
+import pandas as pd
+
+# ================== USER SETTINGS ==================
+
+# Cash in this SoFi sleeve
+CASH_AVAILABLE = 2500.0  # update when this changes
+
+# Core names you never sell
+CORE = ["PLTR", "ASTS", "NVDA", "RKLB", "ONDS"]
+
+# Target weight bands for core names (fraction of *stock* sleeve, not including cash)
+CORE_TARGET_BANDS = {
+    "PLTR": (0.18, 0.22),
+    "NVDA": (0.12, 0.15),
+    "ASTS": (0.08, 0.12),
+    "RKLB": (0.08, 0.12),
+    "ONDS": (0.07, 0.10),
+}
+
+# Satellite rules
+SAT_MAX = 0.05     # satellites above 5% of stocks are "oversized"
+DUST_LEVEL = 0.02  # satellites below 2% of stocks are "dust"
+
+# How much of cash to deploy now
+USE_CASH_FRACTION_NOW = 0.8  # 80% now, 20% dry powder
+
+# ================== CURRENT PORTFOLIO ==================
+# Replace prices/values when you update from SoFi.
+POSITIONS = [
+    # ticker, shares, market_price, total_value
+    ["ASTS", 6, 83.37, 500.22],
+    ["BBAI", 61, 5.81, 354.41],
+    ["BXSL", 7, 26.08, 182.56],
+    ["CCCX", 5, 17.20, 86.00],
+    ["CSIQ", 8, 25.61, 204.88],
+    ["EOSE", 15, 13.04, 195.60],
+    ["ET",   10, 16.59, 165.90],
+    ["FLNC", 15, 23.09, 346.35],
+    ["KTOS", 3, 79.55, 238.65],
+    ["LMND", 3, 75.90, 227.70],
+    ["NVDA", 3, 188.98, 566.94],
+    ["ONDS", 40, 11.04, 441.60],
+    ["PLTR", 6, 169.65, 1017.87],
+    ["RKLB", 5, 76.15, 380.75],
+    ["TE",   50, 7.87, 393.50],
+    ["TEM",  3, 62.65, 187.95],
+    ["WYFI", 14, 16.88, 236.32],
+]
+
+# ================== BOT LOGIC ==========================
+
+def build_dataframe(positions, cash):
+    df = pd.DataFrame(positions, columns=["ticker", "shares", "price", "value"])
+    stocks_val = df["value"].sum()
+    total_val = stocks_val + cash
+    df["weight_stocks"] = df["value"] / stocks_val
+    df["weight_total"] = df["value"] / total_val
+    return df, stocks_val, total_val
+
+def recommend_core_buys(df, cash_to_use):
+    """
+    Allocate cash_to_use across core names that are below their target band.
+    Returns a list of {'action','ticker','shares','approx_cost'} dicts.
+    """
+    recs = []
+    stocks_val = df["value"].sum()
+
+    # calculate how much each core "needs" to reach midpoint of its band
+    needs = []
+    for t in CORE:
+        row = df.loc[df["ticker"] == t].iloc[0]
+        w = row["weight_stocks"]
+        low, high = CORE_TARGET_BANDS[t]
+        target_mid = (low + high) / 2
+        if w < low:
+            needed_value = (target_mid - w) * stocks_val
+            if needed_value > 0:
+                needs.append({
+                    "ticker": t,
+                    "needed_value": needed_value,
+                    "price": row["price"],
+                })
+
+    if not needs or cash_to_use <= 0:
+        return []
+
+    total_needed = sum(n["needed_value"] for n in needs)
+    scale = min(1.0, cash_to_use / total_needed)
+
+    for n in needs:
+        alloc_value = n["needed_value"] * scale
+        shares_to_buy = int(alloc_value // n["price"])
+        if shares_to_buy > 0:
+            recs.append({
+                "action": "BUY",
+                "ticker": n["ticker"],
+                "shares": shares_to_buy,
+                "approx_cost": round(shares_to_buy * n["price"], 2),
+            })
+
+    return recs
+
+def analyze_satellites(df):
+    """
+    Flag non-core names that are oversized or dust.
+    Returns list of {'ticker','status','weight_stocks','value'}.
+    """
+    satellites = df[~df["ticker"].isin(CORE)].copy()
+    issues = []
+    for _, row in satellites.iterrows():
+        w = row["weight_stocks"]
+        if w > SAT_MAX:
+            issues.append({
+                "ticker": row["ticker"],
+                "status": "OVERSIZED",
+                "weight_stocks": w,
+                "value": row["value"],
+            })
+        elif w < DUST_LEVEL:
+            issues.append({
+                "ticker": row["ticker"],
+                "status": "DUST",
+                "weight_stocks": w,
+                "value": row["value"],
+            })
+    return issues
+
+def pretty_percent(x):
+    return f"{x*100:4.1f}%"
+
+def run_bot():
+    df, stocks_val, total_val = build_dataframe(POSITIONS, CASH_AVAILABLE)
+    cash_to_use = CASH_AVAILABLE * USE_CASH_FRACTION_NOW
+
+    print("=== PORTFOLIO SNAPSHOT ===")
+    print(f"Stocks value : ${stocks_val:,.2f}")
+    print(f"Cash         : ${CASH_AVAILABLE:,.2f}")
+    print(f"Total        : ${total_val:,.2f}\n")
+
+    print("Core weights (stock sleeve only):")
+    for t in CORE:
+        row = df.loc[df["ticker"] == t].iloc[0]
+        print(f"  {t}: {pretty_percent(row['weight_stocks'])}  "
+              f"(value ~ ${row['value']:,.0f})")
+    print()
+
+    # Core buy recommendations
+    core_recs = recommend_core_buys(df, cash_to_use)
+
+    print("=== BOT RECOMMENDATIONS ===")
+    print(f"Use about ${cash_to_use:,.0f} of your cash now, keep the rest as dry powder.")
+    if not core_recs:
+        print("No core positions are below their target ranges → hold cash for now.")
+    else:
+        print("\nCore buy suggestions (no selling of PLTR/ASTS/NVDA/RKLB/ONDS):")
+        for r in core_recs:
+            print(f"  {r['action']} {r['shares']} shares of {r['ticker']} "
+                  f"(~${r['approx_cost']:,.0f})")
+
+    # Satellite analysis
+    sat_issues = analyze_satellites(df)
+    print("\nSatellite flags (possible future trim/funding candidates):")
+    if not sat_issues:
+        print("  None. All satellites within desired size range.")
+    else:
+        for s in sat_issues:
+            tag = "too big" if s["status"] == "OVERSIZED" else "tiny/dust"
+            print(f"  {s['ticker']}: {tag}, weight ~ {pretty_percent(s['weight_stocks'])}, "
+                  f"value ~ ${s['value']:,.0f}")
+
+if __name__ == "__main__":
+    run_bot()
